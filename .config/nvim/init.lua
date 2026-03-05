@@ -36,3 +36,8 @@ vim.lsp.config('*', {
 vim.keymap.set("n", "c", "\"_c")
 vim.keymap.set("n", "d", "\"_d")
 
+-- Go to next quickfix item
+vim.keymap.set("n", "<C-j>", ":cnext<CR>", { noremap = true, silent = true })
+
+-- Go to previous quickfix item
+vim.keymap.set("n", "<C-k>", ":cprev<CR>", { noremap = true, silent = true })
