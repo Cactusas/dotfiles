@@ -6,15 +6,33 @@ vim.lsp.enable({ 'clangd', 'bashls', 'luals', 'vtsls', 'vuels' })
 
 vim.lsp.config('*', {
   on_attach = function(client, bufnr)
-    vim.keymap.set("n", "gd", vim.lsp.buf.declaration, { buffer = bufnr })
-    vim.keymap.set("n", "gi", vim.lsp.buf.definition, { buffer = bufnr })
-    vim.keymap.set("n", "gr", vim.lsp.buf.references, { buffer = bufnr })
-    vim.keymap.set("n", "gh", vim.lsp.buf.signature_help, { buffer = bufnr })
-    vim.keymap.set("n", "gI", vim.lsp.buf.incoming_calls, { buffer = bufnr })
-    vim.keymap.set("n", "gO", vim.lsp.buf.outgoing_calls, { buffer = bufnr })
-    vim.keymap.set("n", "gw", vim.lsp.buf.workspace_diagnostics, { buffer = bufnr })
+    local cap = client.server_capabilities
+    if cap.documentHighlightProvider then
+      vim.o.updatetime = 100
+      vim.api.nvim_create_autocmd({ "CursorHold", "CursorHoldI" }, {
+          buffer = bufnr,
+          callback = vim.lsp.buf.document_highlight,
+        })
+      vim.api.nvim_create_autocmd({ "CursorMoved", "CursorMovedI" }, {
+        buffer = bufnr,
+        callback = vim.lsp.buf.clear_references,
+      })
+    end
+
+    if cap.declarationProvider then
+      vim.keymap.set("n", "gd", vim.lsp.buf.declaration, { buffer = bufnr })
+    end
+
+    if cap.definitionProvider then
+      vim.keymap.set("n", "gi", vim.lsp.buf.definition, { buffer = bufnr })
+    end
+
+    if cap.referencesProvider then
+      vim.keymap.set("n", "gr", vim.lsp.buf.references, { buffer = bufnr })
+    end
   end
 })
 
 vim.keymap.set("n", "c", "\"_c")
 vim.keymap.set("n", "d", "\"_d")
+
